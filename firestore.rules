@@ -1,0 +1,86 @@
+// firestore.rules
+// Production-ready security rules for Food Redistribution app.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper Functions ──────────────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ── Users Collection ──────────────────────────────────────────────────────
+    match /users/{userId} {
+      // Any logged-in user can read profiles (for donor info, etc.)
+      allow read: if isAuthenticated();
+      // Only the user themselves (or admin) can write their profile
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // ── Food Listings ─────────────────────────────────────────────────────────
+    match /food_listings/{foodId} {
+      // Anyone logged in can browse available food
+      allow read: if isAuthenticated();
+      // Any logged-in user can create a food listing
+      allow create: if isAuthenticated();
+      // Only the donor can update their listing OR anyone can claim it
+      allow update: if isAuthenticated() && (
+        resource.data.donorId == request.auth.uid ||
+        // Allow claim updates (status change)
+        (request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'claimedById', 'claimedByName', 'claimedAt']))
+      );
+      // Only donor or admin can delete
+      allow delete: if isAuthenticated() && (
+        resource.data.donorId == request.auth.uid || isAdmin()
+      );
+    }
+
+    // ── Street People Tags ────────────────────────────────────────────────────
+    match /street_people/{tagId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      // Only tagger or admin can update (e.g., mark resolved)
+      allow update: if isAuthenticated() && (
+        resource.data.taggedById == request.auth.uid || isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // ── Notifications ─────────────────────────────────────────────────────────
+    match /notifications/{notifId} {
+      // Users can only read their own notifications
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // ── App Statistics ─────────────────────────────────────────────────────────
+    match /app_stats/{docId} {
+      // All authenticated users can read stats (for dashboard)
+      allow read: if isAuthenticated();
+      // Only admins and Cloud Functions can write stats
+      allow write: if isAdmin();
+    }
+
+    // ── Donation Records ───────────────────────────────────────────────────────
+    match /donations/{donationId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+  }
+}

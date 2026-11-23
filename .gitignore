@@ -1,0 +1,109 @@
+
+# General
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IDE
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Node.js / React
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Private credentials
+*service-account*.json
+*private-key*
+*.pem
+*.p12
+*.key
+
+# React build output
+/dist/
+release/
+
+# Capacitor generated Android build files
+/android/.gradle/
+/android/build/
+/android/app/build/
+/android/app/src/main/assets/public/
+/android/app/src/main/assets/capacitor.config.json
+/android/app/src/main/assets/capacitor.plugins.json
+
+# Capacitor generated iOS web assets
+/ios/App/App/public/
+
+# Old Flutter project - exclude
+/lib/
+/linux/
+/macos/
+/windows/
+/web/
+/test/
+/pubspec.yaml
+/pubspec.lock
+/analysis_options.yaml
+
+# Old Flutter iOS files
+/ios/Flutter/
+/ios/Runner/
+/ios/Runner.xcodeproj/
+/ios/Runner.xcworkspace/
+/ios/RunnerTests/
+/ios/debug.xcconfig
+
+# Generated Python environments
+.docx_qa_py/
+.venv/
+venv/
+__pycache__/
+
+# Generated report previews
+report_render_*/
+report_assets/
+report_assets_50/
+sample_pdf_images/
+pdf_reference_render_png/
+doc_review_render_png/
+doc_review_word_render.pdf
+extracted_hungelink_images/
+extracted_pdf_img_*.png
+college_logo_cover_check.png
+narendar_reference.pdf
+narendar_reference_contact_sheet.png
+narendar_reference_render/
+
+# Reference and report helper files
+get_doc_pages.ps1
+get_doc_pages_aligned.ps1
+
+# Separate NFT Marketplace
+/nft-marketplace/
+
+# Additional generated files
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+/build/
+report_render_*.png
+update_hungelink_references.py

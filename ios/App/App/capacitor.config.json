@@ -1,0 +1,11 @@
+{
+	"appId": "com.hungelink.app",
+	"appName": "HungeLink",
+	"webDir": "dist",
+	"server": {
+		"androidScheme": "https"
+	},
+	"packageClassList": [
+		"GeolocationPlugin"
+	]
+}

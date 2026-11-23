@@ -1,0 +1,37 @@
+// storage.rules
+// Firebase Storage security rules for food images and street person images.
+
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ── Food Images ──────────────────────────────────────────────────────────
+    match /food_images/{userId}/{fileName} {
+      // Anyone authenticated can read food images
+      allow read: if request.auth != null;
+      // Only the uploader (donor) can upload
+      allow write: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.size < 5 * 1024 * 1024       // Max 5MB
+        && request.resource.contentType.matches('image/.*'); // Images only
+    }
+
+    // ── Street Person Images ─────────────────────────────────────────────────
+    match /street_person_images/{userId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // ── Profile Images ───────────────────────────────────────────────────────
+    match /profile_images/{userId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}
